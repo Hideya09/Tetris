@@ -10,31 +10,33 @@ public class cPlayer : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		GameObject manager = GameObject.Find ("BlockManager");
+		if (manager == null) {
+			return;
+		}
+
+		//ボタン入力があったら回転、移動、高速の指示を出す
 		if (Input.GetKeyDown (KeyCode.RightArrow)) {
-			GameObject.Find ("BlockManager").GetComponent< cBlockManager > ().MoveRight ();
+			manager.GetComponent< cBlockManager > ().MoveRight ();
 		}
 		if (Input.GetKeyDown (KeyCode.LeftArrow)) {
-			GameObject.Find ("BlockManager").GetComponent< cBlockManager > ().MoveLeft ();
+			manager.GetComponent< cBlockManager > ().MoveLeft ();
 		}
 
 		if (Input.GetKeyDown (KeyCode.A)) {
-			GameObject.Find ("BlockManager").GetComponent< cBlockManager > ().RotateLeft ();
+			manager.GetComponent< cBlockManager > ().RotateLeftCheck ();
 		}
 		if (Input.GetKeyDown (KeyCode.S)) {
-			GameObject.Find ("BlockManager").GetComponent< cBlockManager > ().RotateRight ();
+			manager.GetComponent< cBlockManager > ().RotateRightCheck ();
 		}
 
 		if (Input.GetKey (KeyCode.DownArrow)) {
-			GameObject.Find ("BlockManager").GetComponent< cBlockManager > ().DownSpeedChange ();
+			manager.GetComponent< cBlockManager > ().DownSpeedChange ();
 		}
 
 		//デバッグコマンド
-		if (Input.GetKeyDown (KeyCode.Return)) {
-			GameObject.Find ("BlockManager").GetComponent< cBlockManager > ().DestroyBlock ();
-			GameObject.Find ("BlockCreate").GetComponent< cBlockCreate > ().Create ();
-		}
 		if (Input.GetKeyDown (KeyCode.Space)) {
-			GameObject.Find ("BlockManager").GetComponent< cBlockManager > ().DownSpeedUp ();
+			manager.GetComponent< cBlockManager > ().DownSpeedUp ();
 		}
 	}
 }

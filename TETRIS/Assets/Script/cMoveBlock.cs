@@ -3,7 +3,7 @@ using System.Collections;
 
 public class cMoveBlock : MonoBehaviour {
 
-	private Vector3 m_WorldPosition;
+	//前回のローカル座標
 	private Vector3 m_PrevPosition;
 
 	// Use this for initialization
@@ -12,24 +12,20 @@ public class cMoveBlock : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		m_PrevPosition = transform.position;
+		//前回座標の更新
+		m_PrevPosition = transform.localPosition;
 	}
 
-	public Vector3 GetPosition( Vector3 worldPosition ){
-		Vector3 position = transform.position;
-		position.x += worldPosition.x;
-		position.y += worldPosition.y;
-		position.z += worldPosition.z;
-
-		return position;
-	}
-
-	public Vector3 GetPosition2(){
+	//ワールド座標の取得
+	public Vector3 GetPosition(){
 		return transform.position;
 	}
 
-	public void RotateRight(){
+	//ブロックを右に回転させる
+	public bool RotateRight(){
 		Vector3 position = transform.localPosition;
+
+		//中央から見て上下にあるときと斜めにある時で処理を変える
 		if (position.x == 0 || position.y == 0) {
 			if (position.x == 0) {
 				position.x = -position.y;
@@ -46,10 +42,19 @@ public class cMoveBlock : MonoBehaviour {
 			}
 		}
 
+		//位置を更新
 		transform.localPosition = position;
+
+		//中央より下にあるかを返す
+		if (position.y < 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
-	public void RotateLeft(){
+	//ブロックを左に回転させる
+	public bool RotateLeft(){
 		Vector3 position = transform.localPosition;
 		if (position.x == 0 || position.y == 0) {
 			if (position.y == 0) {
@@ -68,12 +73,20 @@ public class cMoveBlock : MonoBehaviour {
 		}
 
 		transform.localPosition = position;
+
+		if (position.y < 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
+	//前回位置に戻す
 	public void SetPrevPosition(){
-		transform.position = m_PrevPosition;
+		transform.localPosition = m_PrevPosition;
 	}
 
+	//色を設定する
 	public void SetColor( cColor.eColor setColor ){
 		GameObject color = GameObject.Find ("Color");
 
@@ -82,5 +95,10 @@ public class cMoveBlock : MonoBehaviour {
 		MeshRenderer meshRenderer = GetComponent< MeshRenderer > ();
 
 		meshRenderer.material = colorType.GetMaterial (setColor);
+	}
+
+	//ブロックを破壊する
+	public void DestroyBlock(){
+		Destroy (gameObject , .1f);
 	}
 }

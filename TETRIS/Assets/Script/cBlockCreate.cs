@@ -3,16 +3,20 @@ using System.Collections;
 
 public class cBlockCreate : MonoBehaviour {
 
+	//ブロックマネージャー名の末尾配列
 	char[] m_BlockType;
 
+	//ブロックマネージャー数
 	private const int NumberMax = 7;
 
+	//ブロックマネージャーへのアクセス
 	private GameObject m_BlockManager;
 
 	// Use this for initialization
 	void Start () {
 		m_BlockType = new char[ NumberMax ];
 
+		//末尾を入れる
 		m_BlockType [0] = 'I';
 		m_BlockType [1] = 'O';
 		m_BlockType [2] = 'Z';
@@ -21,6 +25,7 @@ public class cBlockCreate : MonoBehaviour {
 		m_BlockType [5] = 'L';
 		m_BlockType [6] = 'T';
 
+		//一番最初のブロックとその次のブロックを生成
 		BlockCreate ();
 		Create ();
 	}
@@ -30,6 +35,7 @@ public class cBlockCreate : MonoBehaviour {
 	
 	}
 
+	//ブロックを生成し、待機状態にする
 	private void BlockCreate(){
 		m_BlockManager = null;
 
@@ -47,6 +53,7 @@ public class cBlockCreate : MonoBehaviour {
 		m_BlockManager = (GameObject)Instantiate( blockManager , setPosition , Quaternion.identity );
 	}
 
+	//待機ブロックをフィールドに出し、新しいブロックを生成させる
 	public void Create(){
 		
 		cBlockManager manager = m_BlockManager.GetComponent< cBlockManager > ();

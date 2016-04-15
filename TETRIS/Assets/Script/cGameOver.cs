@@ -50,7 +50,12 @@ public class cGameOver : MonoBehaviour {
 
 				++m_Count;
 			} else {
-				gameObject.GetComponent< cSceneMove > ().SetSceneMoveFlag ();
+				if( Input.GetKeyDown( KeyCode.Return )){
+					GameObject fade = GameObject.Find ("Fade");
+					cFadeInOut fadeInOut = fade.GetComponent< cFadeInOut > ();
+
+					fadeInOut.SetFadeState (cFadeInOut.eFadeState.FadeOut);
+				}
 			}
 		}
 	}

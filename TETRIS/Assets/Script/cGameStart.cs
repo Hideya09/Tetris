@@ -1,8 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class cGameStart : MonoBehaviour {
-
+public class cGameStart : cSceneStart {
 	//カウントダウン用変数
 	private int m_Count;
 
@@ -31,14 +30,14 @@ public class cGameStart : MonoBehaviour {
 			--m_Count;
 			if (m_Count > 0) {
 				m_TextMesh.text = m_Count.ToString ();
-			} else if(m_Count < 0){
+			} else if (m_Count < 0) {
 				GameObject fieldObject = GameObject.Find ("Field");
 				cField field = fieldObject.GetComponent< cField > ();
 
-				field.GameStartSet();
+				field.GameStartSet ();
 
 				Destroy (gameObject, .001f);
-			} else{
+			} else {
 				m_TextMesh.text = "START!";
 			}
 

@@ -1,27 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class cSceneMove : MonoBehaviour {
-
-	private bool m_SceneMoveFlag;
-
-	public int m_SceneNumber;
+public class cSceneMove : cSceneStart {
 
 	// Use this for initialization
 	void Start () {
-		m_SceneMoveFlag = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		if (m_SceneMoveFlag == true) {
-			if( Input.GetKeyDown( KeyCode.Return )){
-				UnityEngine.SceneManagement.SceneManager.LoadScene( m_SceneNumber );
-			}
-		}
-	}
+		if( Input.GetKeyDown( KeyCode.Return )){
+			GameObject fade = GameObject.Find ("Fade");
+			cFadeInOut fadeInOut = fade.GetComponent< cFadeInOut > ();
 
-	public void SetSceneMoveFlag(){
-		m_SceneMoveFlag = true;
+			fadeInOut.SetFadeState (cFadeInOut.eFadeState.FadeOut);
+
+			Destroy (gameObject, .001f);
+		}
 	}
 }

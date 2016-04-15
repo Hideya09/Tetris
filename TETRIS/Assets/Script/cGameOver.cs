@@ -50,6 +50,7 @@ public class cGameOver : MonoBehaviour {
 
 				++m_Count;
 			} else {
+				gameObject.GetComponent< cSceneMove > ().SetSceneMoveFlag ();
 			}
 		}
 	}

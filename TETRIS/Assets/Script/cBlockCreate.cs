@@ -24,10 +24,6 @@ public class cBlockCreate : MonoBehaviour {
 		m_BlockType [4] = 'J';
 		m_BlockType [5] = 'L';
 		m_BlockType [6] = 'T';
-
-		//一番最初のブロックとその次のブロックを生成
-		BlockCreate ();
-		Create ();
 	}
 	
 	// Update is called once per frame
@@ -60,5 +56,11 @@ public class cBlockCreate : MonoBehaviour {
 		manager.SetField ();
 
 		BlockCreate ();
+	}
+
+	public void StartCreate(){
+		//一番最初のブロックとその次のブロックを生成
+		BlockCreate ();
+		Create ();
 	}
 }

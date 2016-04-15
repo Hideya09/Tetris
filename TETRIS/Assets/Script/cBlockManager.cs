@@ -88,15 +88,30 @@ public class cBlockManager : MonoBehaviour {
 			}
 
 			//固定されるかをチェック
+			int ghostNumber = cField.HightMax;
+
 			int i;
 			for (i = 0; i < BlockMax; i++) {
+
 				if (m_Field.HitCheck (m_MoveBlock [i].GetPosition ())) {
 					++m_Fixing;
 					break;
+				} else {
+					int down = m_Field.GhostCheck (m_MoveBlock [i].GetPosition ());
+					if (down < ghostNumber) {
+						ghostNumber = down;
+					}
 				}
 			}
 			if (i == BlockMax) {
 				m_Fixing = 0;
+
+				if (ghostNumber > 0) {
+					for (int j = 0; j < BlockMax; ++j) {
+						m_Field.SetBlock (m_MoveBlock [j], cColor.eColor.Gray, ghostNumber);
+					}
+				}
+
 			} else {
 				//位置の修正
 				Vector3 position = transform.position;
@@ -302,7 +317,7 @@ public class cBlockManager : MonoBehaviour {
 		}
 
 		//自信を破棄する
-		Destroy (gameObject , .1f);
+		Destroy (gameObject , .001f);
 	}
 
 	//フィールドにこのマネージャーの管理するブロックを出現させる

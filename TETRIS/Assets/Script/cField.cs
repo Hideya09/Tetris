@@ -35,7 +35,7 @@ public class cField : MonoBehaviour {
 		m_Create = create.GetComponent < cBlockCreate > ();
 
 		//フラグの初期化処理
-		m_GameFlag = true;
+		m_GameFlag = false;
 
 		m_FixingFlag = false;
 
@@ -48,7 +48,7 @@ public class cField : MonoBehaviour {
 
 			block.name = "FixingBlock" + i.ToString();
 
-			Vector3 setPosition = new Vector3(  ( i % WidthMax ) , ( i / WidthMax ) , 0.0f );
+			Vector3 setPosition = new Vector3(  ( i % WidthMax ) , ( i / WidthMax ) , 0.5f );
 
 			block = (GameObject)Instantiate( block , setPosition , Quaternion.identity );
 
@@ -101,11 +101,28 @@ public class cField : MonoBehaviour {
 		}
 
 		//ブロックが存在しているところに当たっていると判断する
-		if (m_FixingBlock[ x + ( y * WidthMax ) ].GetColorType() < cColor.eColor.Transparency) {
+		if (m_FixingBlock[ x + ( y * WidthMax ) ].GetColorType() < cColor.eColor.Gray) {
 			return true;
 		}
 
 		return false;
+	}
+
+	//ゴーストの処理
+	public int GhostCheck( Vector3 position ){
+		//そのまま入れる
+		int x = (int)position.x;
+
+		//y座標は切り捨てで計算する
+		int y = (int)Mathf.Floor(position.y);
+
+		int number = 0;
+
+		while( m_FixingBlock[ x + ( ( y - ( number + 1 ) ) * WidthMax ) ] .GetColorType() >= cColor.eColor.Gray ){
+			++number;
+		}
+
+		return number;
 	}
 
 	//フィールドのブロック状態を調べる
@@ -135,12 +152,10 @@ public class cField : MonoBehaviour {
 			}
 
 			//ループをbreak以外で抜けたら削除処理をおこなう
-			if (j == WidthMax - 1) {
+			if ( i < HightBlockMax && j == WidthMax - 1) {
 				++deleteNumber;
 
-				if (WidthDelete (i) == true) {
-					break;
-				}
+				WidthDelete (i);
 			} else {
 				++i;
 			}
@@ -148,7 +163,7 @@ public class cField : MonoBehaviour {
 	}
 
 	//ブロックの削除を行う
-	private bool WidthDelete( int number ){
+	private void WidthDelete( int number ){
 		bool blockFlag = true;
 
 		//削除する列より上の情報を一つずつ下げる
@@ -171,8 +186,6 @@ public class cField : MonoBehaviour {
 				break;
 			}
 		}
-
-		return blockFlag;
 	}
 
 
@@ -181,13 +194,21 @@ public class cField : MonoBehaviour {
 		m_FixingFlag = true;
 	}
 
+	public void GameStartSet(){
+		m_GameFlag = true;
+
+		m_Create.StartCreate ();
+	}
+
 	//指定した場所に色情報をセットする
-	public void SetBlock( cMoveBlock moveBlock , cColor.eColor color ){
+	public void SetBlock( cMoveBlock moveBlock , cColor.eColor color , int downY = 0 ){
 		Vector3 position = moveBlock.GetPosition ();
 
 		int x = (int)position.x;
-		int y = (int)Mathf.Floor(position.y);
+		int y = Mathf.FloorToInt(position.y) - downY;
 
-		m_FixingBlock [x + (y * WidthMax)].SetColorType (color);
+		if (x + (y * WidthMax) < BlockMax) {
+			m_FixingBlock [x + (y * WidthMax)].SetColorType (color);
+		}
 	}
 }

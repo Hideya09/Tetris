@@ -99,6 +99,6 @@ public class cMoveBlock : MonoBehaviour {
 
 	//ブロックを破壊する
 	public void DestroyBlock(){
-		Destroy (gameObject , .1f);
+		Destroy (gameObject , .001f);
 	}
 }

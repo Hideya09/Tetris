@@ -13,6 +13,9 @@ public class cBlock : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+		if (m_ColorType == cColor.eColor.Gray) {
+			SetColorType (cColor.eColor.Transparency);
+		}
 	}
 
 	//ブロックに色情報をセットする

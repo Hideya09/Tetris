@@ -78,7 +78,7 @@ public class cBlockManager : MonoBehaviour {
 			//フラグが立っているなら早く落下させる
 			if (m_DownSpeedFlag == true) {
 				Vector3 position = transform.position;
-				position.y -= m_DownSpeed * 2;
+				position.y -= m_DownSpeed * 3;
 				transform.position = position;
 				m_DownSpeedFlag = false;
 			} else {
@@ -270,6 +270,10 @@ public class cBlockManager : MonoBehaviour {
 			if (m_Field.HitCheck (m_MoveBlock [i].GetPosition ()) == true) {
 				break;
 			}
+
+			if (m_Field.HitCheck2 (m_MoveBlock [i].GetPosition ()) == true) {
+				break;
+			}
 		}
 		if (i != BlockMax) {
 			position.x -= 1;
@@ -301,8 +305,12 @@ public class cBlockManager : MonoBehaviour {
 	}
 
 	//さがる基本速度を変える
-	public void DownSpeedUp(){
+	public static void DownSpeedUp(){
 		m_DownSpeed += 0.02f;
+	}
+
+	public static void InitSpeed(){
+		m_DownSpeed = 0.04f;
 	}
 
 	//フィールドに情報を渡して自殺する
@@ -326,7 +334,7 @@ public class cBlockManager : MonoBehaviour {
 		//位置のセット
 		Vector3 position;
 		position.x = 6.0f;
-		position.y = 23.0f;
+		position.y = 21.0f;
 		position.z = 0.0f;
 
 		transform.position = position;

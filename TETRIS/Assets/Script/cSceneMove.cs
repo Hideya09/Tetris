@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class cSceneMove : cSceneStart {
+public class cSceneMove : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {

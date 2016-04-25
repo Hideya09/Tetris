@@ -41,7 +41,7 @@ public class cBlockCreate : MonoBehaviour {
 		Vector3 setPosition;
 
 		setPosition.x = 15.0f;
-		setPosition.y = 20.0f;
+		setPosition.y = 17.5f;
 		setPosition.z = 0.0f;
 
 		GameObject blockManager = (GameObject)Resources.Load (name);

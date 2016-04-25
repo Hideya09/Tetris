@@ -23,6 +23,8 @@ public class cGameOver : MonoBehaviour {
 	void Start () {
 		//指定位置到達に必要な情報を計算する
 
+		m_Count = 0;
+
 		Vector3 position = transform.position;
 
 		float distance = Vector3.Distance (m_MovePosition, position);

@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class cGameStart : cSceneStart {
+public class cGameStart : MonoBehaviour {
 	//カウントダウン用変数
 	private int m_Count;
 

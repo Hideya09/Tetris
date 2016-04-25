@@ -24,6 +24,8 @@ public class cField : MonoBehaviour {
 	//テトリミノを生成するスクリプトへのアクセス
 	private cBlockCreate m_Create;
 
+	private cScore m_Score;
+
 	// Use this for initialization
 	void Start () {
 		//フレームレート設定
@@ -33,6 +35,9 @@ public class cField : MonoBehaviour {
 		GameObject create = GameObject.Find ("BlockCreate");
 
 		m_Create = create.GetComponent < cBlockCreate > ();
+
+		GameObject score = GameObject.Find ("Score");
+		m_Score = score.GetComponent< cScore > ();
 
 		//フラグの初期化処理
 		m_GameFlag = false;
@@ -88,7 +93,7 @@ public class cField : MonoBehaviour {
 		int x = (int)position.x;
 
 		//y座標は切り捨てで計算する
-		int y = (int)Mathf.Floor(position.y);
+		int y = Mathf.FloorToInt(position.y);
 
 		//フィールド外部のため当たっていると判断する
 		if (y < 0 || x < 0 || x >= WidthMax ) {
@@ -97,6 +102,36 @@ public class cField : MonoBehaviour {
 
 		//画面外に存在している
 		if (y >= HightMax) {
+			return false;
+		}
+
+		//ブロックが存在しているところに当たっていると判断する
+		if (m_FixingBlock[ x + ( y * WidthMax ) ].GetColorType() < cColor.eColor.Gray) {
+			return true;
+		}
+
+		return false;
+	}
+
+	//横移動用あたり判定
+	public bool HitCheck2( Vector3 position ){
+		//そのまま入れる
+		int x = (int)position.x;
+
+		//y座標は切り上げで計算する
+		int y = Mathf.CeilToInt(position.y);
+
+		//フィールド外部のため当たっていると判断する
+		if (y < 0 || x < 0 || x >= WidthMax ) {
+			return true;
+		}
+
+		//画面外に存在している
+		if (y >= HightMax) {
+			return false;
+		}
+
+		if (y - position.y > 0.7f) {
 			return false;
 		}
 
@@ -129,7 +164,7 @@ public class cField : MonoBehaviour {
 	private void WidthCheck(){
 
 		//削除した列の数
-		int deleteNumber = 0;
+		int deleteNumber = -1;
 
 		//ブロックの配列を調べる
 		for( int i = 1 ; i < HightMax ; ){
@@ -160,6 +195,7 @@ public class cField : MonoBehaviour {
 				++i;
 			}
 		}
+		m_Score.ScoreAdd (deleteNumber);
 	}
 
 	//ブロックの削除を行う

@@ -24,7 +24,11 @@ public class cField : MonoBehaviour {
 	//テトリミノを生成するスクリプトへのアクセス
 	private cBlockCreate m_Create;
 
+	//スコア表示のスクリプト
 	private cScore m_Score;
+
+	//エフェクトの表示スクリプト
+	private cDeleteEffect m_Effect;
 
 	// Use this for initialization
 	void Start () {
@@ -38,6 +42,9 @@ public class cField : MonoBehaviour {
 
 		GameObject score = GameObject.Find ("Score");
 		m_Score = score.GetComponent< cScore > ();
+
+		GameObject effect = GameObject.Find ("DeleteEffect");
+		m_Effect = effect.GetComponent< cDeleteEffect > ();
 
 		//フラグの初期化処理
 		m_GameFlag = false;
@@ -131,7 +138,7 @@ public class cField : MonoBehaviour {
 			return false;
 		}
 
-		if (y - position.y > 0.7f) {
+		if (y - position.y < 0.1f) {
 			return false;
 		}
 
@@ -196,6 +203,8 @@ public class cField : MonoBehaviour {
 			}
 		}
 		m_Score.ScoreAdd (deleteNumber);
+
+		m_Effect.SetMoveFlag (deleteNumber);
 	}
 
 	//ブロックの削除を行う

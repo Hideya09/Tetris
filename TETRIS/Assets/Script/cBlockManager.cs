@@ -306,7 +306,9 @@ public class cBlockManager : MonoBehaviour {
 
 	//さがる基本速度を変える
 	public static void DownSpeedUp(){
-		m_DownSpeed += 0.02f;
+		if (m_DownSpeed < 1.0f) {
+			m_DownSpeed += 0.02f;
+		}
 	}
 
 	public static void InitSpeed(){
@@ -334,7 +336,7 @@ public class cBlockManager : MonoBehaviour {
 		//位置のセット
 		Vector3 position;
 		position.x = 6.0f;
-		position.y = 21.0f;
+		position.y = 22.0f;
 		position.z = 0.0f;
 
 		transform.position = position;

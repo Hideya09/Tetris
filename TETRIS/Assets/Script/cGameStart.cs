@@ -41,13 +41,13 @@ public class cGameStart : MonoBehaviour {
 				m_TextMesh.text = "START!";
 			}
 
-			m_TextMesh.characterSize = 2.0f;
+			m_TextMesh.characterSize = 0.5f;
 			Color color = m_TextMesh.color;
 			color.a = 1.0f;
 			m_TextMesh.color = color;
 		} else {
 			//文字を大きくしつつ、透明にしていく
-			m_TextMesh.characterSize += 0.416666f;
+			m_TextMesh.characterSize += 0.1f;
 			Color color = m_TextMesh.color;
 			color.a -= 0.016666f;
 			m_TextMesh.color = color;

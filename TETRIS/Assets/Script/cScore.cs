@@ -3,13 +3,16 @@ using System.Collections;
 
 public class cScore : MonoBehaviour {
 
+	//加算する数値の数
 	public const int ScoreMax = 4;
 
+	//加算数値の配列
 	private int[] m_ScoreNumber;
 
-	private int m_PrevScore;
+	//今回のスコア
 	private int m_Score;
 
+	//表示スコア
 	private TextMesh m_Text;
 
 	// Use this for initialization
@@ -19,8 +22,8 @@ public class cScore : MonoBehaviour {
 		cBlockManager.InitSpeed ();
 
 		m_Score = 0;
-		m_PrevScore = 0;
 
+		//加算する数値を設定
 		m_ScoreNumber = new int[ ScoreMax ];
 		for (int i = 0; i < ScoreMax; ++i) {
 			m_ScoreNumber [i] = (i + 1) * (i + 1);
@@ -32,18 +35,24 @@ public class cScore : MonoBehaviour {
 		
 	}
 
+	//スコアの加算
 	public void ScoreAdd( int tetrisType ){
+		//ありえない消去数が来たら抜ける
 		if (tetrisType >= ScoreMax || tetrisType < 0) {
 			return;
 		}
 
-		m_PrevScore = m_Score;
+		//現在スコアの記録
+		int prevScore = m_Score;
+		//スコアの加算
 		m_Score += m_ScoreNumber [tetrisType];
 
-		if (m_Score / 50 > m_PrevScore / 50) {
+		//５０刻みに基礎落下速度を変える
+		if (m_Score / 50 > prevScore / 50) {
 			cBlockManager.DownSpeedUp ();
 		}
 
+		//表示テキストに現在のスコアを記録
 		m_Text.text = "Score:\n" + m_Score.ToString ();
 	}
 }

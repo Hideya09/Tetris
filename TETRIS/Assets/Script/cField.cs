@@ -103,7 +103,7 @@ public class cField : MonoBehaviour {
 		int y = Mathf.FloorToInt(position.y);
 
 		//フィールド外部のため当たっていると判断する
-		if (y < 0 || x < 0 || x >= WidthMax ) {
+		if (y < 0 || x <= 0 || x >= WidthMax - 1 ) {
 			return true;
 		}
 
@@ -129,7 +129,7 @@ public class cField : MonoBehaviour {
 		int y = Mathf.CeilToInt(position.y);
 
 		//フィールド外部のため当たっていると判断する
-		if (y < 0 || x < 0 || x >= WidthMax ) {
+		if (y < 0 || x <= 0 || x >= WidthMax - 1 ) {
 			return true;
 		}
 
@@ -138,12 +138,11 @@ public class cField : MonoBehaviour {
 			return false;
 		}
 
-		if (y - position.y < 0.1f) {
-			return false;
-		}
-
 		//ブロックが存在しているところに当たっていると判断する
 		if (m_FixingBlock[ x + ( y * WidthMax ) ].GetColorType() < cColor.eColor.Gray) {
+			//if ( (y - position.y) > 0.9f) {
+			//	return false;
+			//}
 			return true;
 		}
 
@@ -180,17 +179,9 @@ public class cField : MonoBehaviour {
 				//ブロックが存在していいところ以外にブロックがあればゲームオーバーにする
 				//列内に透明なブロックを発見したらループを抜ける
 				bool blockCheck = m_FixingBlock [j + (i * WidthMax)].GetColorType () == cColor.eColor.Transparency;
-				if (i >= HightBlockMax && !blockCheck) {
-					m_GameFlag = false;
-					break;
-				} else if (i < HightBlockMax && blockCheck) {
+				if (i < HightBlockMax && blockCheck) {
 					break;
 				}
-			}
-				
-			if (m_GameFlag == false) {
-				GameObject.Find ("GameOver").GetComponent< cGameOver > ().SetMoveFlag ();
-				break;
 			}
 
 			//ループをbreak以外で抜けたら削除処理をおこなう
@@ -239,14 +230,8 @@ public class cField : MonoBehaviour {
 		m_FixingFlag = true;
 	}
 
-	public void GameStartSet(){
-		m_GameFlag = true;
-
-		m_Create.StartCreate ();
-	}
-
-	//指定した場所に色情報をセットする
-	public void SetBlock( cMoveBlock moveBlock , cColor.eColor color , int downY = 0 ){
+	//指定した場所に色情報をセットする。downYはゴースト時に数値を入れる
+	public bool SetBlock( cMoveBlock moveBlock , cColor.eColor color , int downY = 0 ){
 		Vector3 position = moveBlock.GetPosition ();
 
 		int x = (int)position.x;
@@ -255,5 +240,24 @@ public class cField : MonoBehaviour {
 		if (x + (y * WidthMax) < BlockMax) {
 			m_FixingBlock [x + (y * WidthMax)].SetColorType (color);
 		}
+
+		if( y >= HightBlockMax ){
+			return false;
+		}
+
+		return true;
+	}
+
+	//ゲームスタートのセット
+	public void GameStartSet(){
+		m_GameFlag = true;
+
+		m_Create.StartCreate ();
+	}
+
+	//ゲームオーバーのセット
+	public void GameOverSet(){
+		m_GameFlag = false;
+		GameObject.Find ("GameOver").GetComponent< cGameOver > ().SetMoveFlag ();
 	}
 }

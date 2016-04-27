@@ -36,6 +36,11 @@ public class cBlockManager : MonoBehaviour {
 	//固定される時間
 	private static int FixingMax = 30;
 
+	//右方向の移動について前回上部分で当たっていた場合
+	private bool m_RightHitUpFlag;
+	//左方向の移動について前回上部分で当たっていた場合
+	private bool m_LeftHitUpFlag;
+
 	void Awake(){
 		//待機用のため名前を変更
 		transform.gameObject.name = "BlockManagerWait";
@@ -119,6 +124,7 @@ public class cBlockManager : MonoBehaviour {
 				transform.position = position;
 			}
 
+			//固定が行われた
 			if (m_Fixing == FixingMax) {
 				m_FieldFlag = false;
 				m_Field.SetCheck();
@@ -260,10 +266,14 @@ public class cBlockManager : MonoBehaviour {
 	}
 
 	//右への移動
-	public void MoveRight(){
+	public bool MoveRight(){
+		m_LeftHitUpFlag = false;
+
 		Vector3 position = transform.position;
 		position.x += 1;
 		transform.position = position;
+
+		bool upHit = false;
 
 		int i;
 		for (i = 0; i < BlockMax; i++) {
@@ -272,31 +282,69 @@ public class cBlockManager : MonoBehaviour {
 			}
 
 			if (m_Field.HitCheck2 (m_MoveBlock [i].GetPosition ()) == true) {
-				break;
+				upHit = true;
 			}
 		}
-		if (i != BlockMax) {
+		if (i != BlockMax && m_RightHitUpFlag == false) {
 			position.x -= 1;
 			transform.position = position;
+
+			return false;
+		} else if (upHit == true) {
+			position.x -= 1;
+			transform.position = position;
+
+			m_RightHitUpFlag = true;
+
+			return false;
 		}
+
+		m_RightHitUpFlag = false;
+
+		return true;
 	}
 
 	//左への移動
-	public void MoveLeft(){
+	public bool MoveLeft(){
+		m_RightHitUpFlag = false;
+
 		Vector3 position = transform.position;
 		position.x -= 1;
 		transform.position = position;
+
+		bool upHit = false;
 
 		int i;
 		for (i = 0; i < BlockMax; i++) {
 			if (m_Field.HitCheck (m_MoveBlock [i].GetPosition ()) == true) {
 				break;
 			}
+			if (m_Field.HitCheck2 (m_MoveBlock [i].GetPosition ()) == true) {
+				upHit = true;
+			}
 		}
-		if (i != BlockMax) {
+		if (i != BlockMax && m_LeftHitUpFlag == false) {
 			position.x += 1;
 			transform.position = position;
+
+			return false;
+		} else if (upHit == true) {
+			position.x += 1;
+			transform.position = position;
+
+			m_LeftHitUpFlag = true;
+
+			return false;
 		}
+
+		m_LeftHitUpFlag = false;
+
+		return true;
+	}
+
+	public void DontMove(){
+		m_RightHitUpFlag = false;
+		m_LeftHitUpFlag = false;
 	}
 
 	//下がる速度上昇フラグを立てる
@@ -317,13 +365,19 @@ public class cBlockManager : MonoBehaviour {
 
 	//フィールドに情報を渡して自殺する
 	public void DestroyManager(){
+		bool gameContinueFlag = false;
+
 		for( int i = 0 ; i < 4 ; i++ ){
 
 			//色情報を渡す
-			m_Field.SetBlock (m_MoveBlock [i], m_BlockColor);
+			 gameContinueFlag |= m_Field.SetBlock (m_MoveBlock [i], m_BlockColor);
 
 			//ブロックを破棄する
 			m_MoveBlock[i].DestroyBlock();
+		}
+
+		if (gameContinueFlag == false) {
+			m_Field.GameOverSet ();
 		}
 
 		//自信を破棄する

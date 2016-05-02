@@ -92,9 +92,9 @@ public class cMoveBlock : MonoBehaviour {
 
 		cColor colorType = color.GetComponent< cColor >();
 
-		MeshRenderer meshRenderer = GetComponent< MeshRenderer > ();
+		SpriteRenderer sprite  = GetComponent< SpriteRenderer > ();
 
-		meshRenderer.material = colorType.GetMaterial (setColor);
+		sprite.sprite = colorType.GetSprite (setColor);
 	}
 
 	//ブロックを破壊する

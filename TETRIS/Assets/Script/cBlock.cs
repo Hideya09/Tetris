@@ -22,11 +22,17 @@ public class cBlock : MonoBehaviour {
 	public void SetColorType( cColor.eColor setColor ){
 		m_ColorType = setColor;
 
-		Renderer mesh = this.GetComponent< Renderer > ();
+		SpriteRenderer sprite = this.GetComponent< SpriteRenderer > ();
 
 		cColor getColor = GameObject.Find ("Color").GetComponent< cColor > ();
 
-		mesh.material = getColor.GetMaterial (m_ColorType);
+		sprite.sprite = getColor.GetSprite (m_ColorType);
+
+		if (setColor == cColor.eColor.Transparency) {
+			sprite.color = new Color (1.0f, 1.0f, 1.0f, 0.0f);
+		} else {
+			sprite.color = new Color (1.0f, 1.0f, 1.0f, 1.0f);
+		}
 	}
 
 	//ブロックの色情報を取得する

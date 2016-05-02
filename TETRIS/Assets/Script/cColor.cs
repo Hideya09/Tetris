@@ -19,7 +19,7 @@ public class cColor : MonoBehaviour {
 	};
 
 	//色のマテリアル
-	public Material[] m_Color;
+	public Sprite[] m_Color;
 
 	// Use this for initialization
 	void Start () {
@@ -32,7 +32,7 @@ public class cColor : MonoBehaviour {
 	}
 
 	//指定色のマテリアルを取得
-	public Material GetMaterial( eColor index ){
+	public Sprite GetSprite( eColor index ){
 		return m_Color [(int)index];
 	}
 }

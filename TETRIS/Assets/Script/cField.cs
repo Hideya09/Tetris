@@ -32,9 +32,6 @@ public class cField : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		//フレームレート設定
-		Application.targetFrameRate = 60;
-
 		//テトリミノ生成スクリプトの取得
 		GameObject create = GameObject.Find ("BlockCreate");
 
@@ -179,9 +176,17 @@ public class cField : MonoBehaviour {
 				//ブロックが存在していいところ以外にブロックがあればゲームオーバーにする
 				//列内に透明なブロックを発見したらループを抜ける
 				bool blockCheck = m_FixingBlock [j + (i * WidthMax)].GetColorType () == cColor.eColor.Transparency;
+				if (i >= HightBlockMax && !blockCheck) {
+					GameOverSet ();
+					break;
+				}
 				if (i < HightBlockMax && blockCheck) {
 					break;
 				}
+			}
+
+			if (m_GameFlag == false) {
+				break;
 			}
 
 			//ループをbreak以外で抜けたら削除処理をおこなう
@@ -238,6 +243,11 @@ public class cField : MonoBehaviour {
 		int y = Mathf.FloorToInt(position.y) - downY;
 
 		if (x + (y * WidthMax) < BlockMax) {
+
+			if (m_FixingBlock [x + (y * WidthMax)].GetColorType() < cColor.eColor.Gray) {
+				return false;
+			}
+
 			m_FixingBlock [x + (y * WidthMax)].SetColorType (color);
 		}
 

@@ -7,14 +7,14 @@ public class cGameStart : MonoBehaviour {
 
 	//カウントを下げる用
 	private const int m_Second = 60;
-	private int m_SecondCount;
+	private float m_SecondCount;
 
 	//表示するテキストメッシュ
 	private TextMesh m_TextMesh;
 
 	// Use this for initialization
 	void Start () {
-		m_Count = 5;
+		m_Count = 3;
 		m_SecondCount = 0;
 
 		m_TextMesh = GetComponent< TextMesh > ();
@@ -22,11 +22,17 @@ public class cGameStart : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		++m_SecondCount;
+		m_SecondCount += Time.deltaTime;
+
+		if ( m_Count > 0 && Input.GetKeyDown (KeyCode.Return)) {
+			m_SecondCount = m_Second;
+
+			m_Count = 1;
+		}
 
 		//一秒経過したら表示文字を変える
-		if (m_SecondCount == m_Second) {
-			m_SecondCount = 0;
+		if (m_SecondCount >= 1.0f) {
+			m_SecondCount = 0.0f;
 			--m_Count;
 			if (m_Count > 0) {
 				m_TextMesh.text = m_Count.ToString ();
@@ -47,9 +53,9 @@ public class cGameStart : MonoBehaviour {
 			m_TextMesh.color = color;
 		} else {
 			//文字を大きくしつつ、透明にしていく
-			m_TextMesh.characterSize += 0.1f;
+			m_TextMesh.characterSize += Time.deltaTime;
 			Color color = m_TextMesh.color;
-			color.a -= 0.016666f;
+			color.a -= Time.deltaTime;
 			m_TextMesh.color = color;
 		}
 	}

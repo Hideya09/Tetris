@@ -9,12 +9,12 @@ public class cGameOver : MonoBehaviour {
 	//指定位置
 	public Vector3 m_MovePosition;
 	//何フレームで到達させるか
-	public int m_MaxCount;
+	private float m_MaxCount;
 
 	//１フレームごとのスピード
 	private float m_Speed;
 	//現在何フレーム進んだか
-	private int m_Count;
+	private float m_Count;
 
 	//移動フラグ
 	private bool m_MoveFlag;
@@ -43,8 +43,9 @@ public class cGameOver : MonoBehaviour {
 		if (m_MoveFlag == true) {
 			//指定位置に移動させる
 
+			Vector3 position = transform.position;
+
 			if (m_Count < m_MaxCount) {
-				Vector3 position = transform.position;
 				position.x += m_Direction.x * m_Speed;
 				position.y += m_Direction.y * m_Speed;
 				position.z += m_Direction.z * m_Speed;

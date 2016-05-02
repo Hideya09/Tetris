@@ -4,7 +4,11 @@ using System.Collections;
 public class cBlockManager : MonoBehaviour {
 
 	//ブロックが自動で下がる量
-	private static float m_DownSpeed = 0.04f;
+	private float m_DownSpeed;
+
+	public static float m_DownBasicSpeed = 3.6f;
+	public static float m_DownAdd = 1.2f;
+	public static int m_DownAddNumber = 0;
 
 	//ブロックの最大数
 	private const int BlockMax = 4;
@@ -15,7 +19,10 @@ public class cBlockManager : MonoBehaviour {
 	//センターの下にブロックがあるかないかのフラグ
 	private bool m_BottomFlag;
 
-	//自動で下がる量を引き上げる
+	//急速落下を行うフラグ
+	private bool m_HardDropFlag;
+	private int m_HardDropPossibleCount;
+	//自動で下がる量を引き上げるフラグ
 	private bool m_DownSpeedFlag;
 
 	//フィールド上に存在しているかのフラグ
@@ -31,10 +38,10 @@ public class cBlockManager : MonoBehaviour {
 	private cField m_Field;
 
 	//固定されるまでの猶予
-	private int m_Fixing;
+	private float m_Fixing;
 
 	//固定される時間
-	private static int FixingMax = 30;
+	private static float FixingMax = 0.5f;
 
 	//右方向の移動について前回上部分で当たっていた場合
 	private bool m_RightHitUpFlag;
@@ -52,6 +59,9 @@ public class cBlockManager : MonoBehaviour {
 	void Start () {
 		//各ブロックの準備
 		m_MoveBlock = new cMoveBlock[ BlockMax ];
+
+		m_HardDropFlag = false;
+		m_HardDropPossibleCount = 15;
 
 		m_DownSpeedFlag = false;
 
@@ -73,6 +83,8 @@ public class cBlockManager : MonoBehaviour {
 	
 		m_RotateFlag = false;
 		m_BottomFlag = false;
+
+		m_DownSpeed = m_DownBasicSpeed + (m_DownAdd * m_DownAddNumber);
 	}
 	
 	// Update is called once per frame
@@ -80,17 +92,28 @@ public class cBlockManager : MonoBehaviour {
 
 		//フィールドに存在している時
 		if (m_FieldFlag == true) {
+			m_DownSpeed = m_DownBasicSpeed + (m_DownAdd * m_DownAddNumber);
+
+			if (m_HardDropPossibleCount > 0) {
+				--m_HardDropPossibleCount;
+			}
+
 			//フラグが立っているなら早く落下させる
+			Vector3 position = transform.position;
+
+			if (m_HardDropFlag == true) {
+				position.y = Mathf.Floor (position.y);
+				m_DownSpeedFlag = false;
+			}
+
 			if (m_DownSpeedFlag == true) {
-				Vector3 position = transform.position;
-				position.y -= m_DownSpeed * 3;
-				transform.position = position;
+				position.y -= ( m_DownSpeed * Time.deltaTime ) * 3;
 				m_DownSpeedFlag = false;
 			} else {
-				Vector3 position = transform.position;
-				position.y -= m_DownSpeed;
-				transform.position = position;
+				position.y -= ( m_DownSpeed * Time.deltaTime );
 			}
+
+			transform.position = position;
 
 			//固定されるかをチェック
 			int ghostNumber = cField.HightMax;
@@ -99,7 +122,7 @@ public class cBlockManager : MonoBehaviour {
 			for (i = 0; i < BlockMax; i++) {
 
 				if (m_Field.HitCheck (m_MoveBlock [i].GetPosition ())) {
-					++m_Fixing;
+					m_Fixing += Time.deltaTime;
 					break;
 				} else {
 					int down = m_Field.GhostCheck (m_MoveBlock [i].GetPosition ());
@@ -119,13 +142,18 @@ public class cBlockManager : MonoBehaviour {
 
 			} else {
 				//位置の修正
-				Vector3 position = transform.position;
+				position = transform.position;
 				position.y = Mathf.Ceil (position.y);
 				transform.position = position;
+				if (m_HardDropFlag == true) {
+					m_Fixing = FixingMax;
+				}
 			}
 
+			m_HardDropFlag = false;
+
 			//固定が行われた
-			if (m_Fixing == FixingMax) {
+			if (m_Fixing >= FixingMax) {
 				m_FieldFlag = false;
 				m_Field.SetCheck();
 
@@ -157,7 +185,10 @@ public class cBlockManager : MonoBehaviour {
 			}
 
 			if (RotateHitCheck () == true) {
-				transform.position = prevPosition;
+				if (RotateMove () == false) {
+					RotateCancel ();
+					transform.position = prevPosition;
+				}
 			}
 		}
 
@@ -187,7 +218,10 @@ public class cBlockManager : MonoBehaviour {
 			}
 
 			if (RotateHitCheck () == true) {
-				transform.position = prevPosition;
+				if (RotateMove () == false) {
+					RotateCancel ();
+					transform.position = prevPosition;
+				}
 			}
 		}
 
@@ -205,23 +239,57 @@ public class cBlockManager : MonoBehaviour {
 				RotateLeft ();
 			}
 
-			RotateHitCheck ();
-
-			return true;
 		} else if (m_BlockColor == cColor.eColor.Purple) {
 			if (m_RotateFlag == true) {
 				RotateLeft ();
 			} else {
 				RotateRight ();
 			}
+		} else {
+			return false;
+		}
 
-			RotateHitCheck ();
+		if (RotateHitCheck () == true) {
+			if (RotateMove () == false) {
+				RotateCancel ();
+			}
+		}
 
+		return true;
+	}
+
+	//移動することによって回転が可能かをチェックする関数
+	private bool RotateMove(){
+		Vector3 position = transform.position;
+		position.x += 1;
+		transform.position = position;
+
+		if (RotateHitCheck () == false) {
 			return true;
-		} 
+		}
+
+		position = transform.position;
+		position.x -= 2;
+		transform.position = position;
+
+		if (RotateHitCheck () == false) {
+			return true;
+		}
+
+		position = transform.position;
+		position.x += 1;
+		transform.position = position;
 
 		return false;
 	}
+
+	//回転が出来ない場合元の位置に戻す
+	private void RotateCancel(){
+		for (int i = 0; i < BlockMax; ++i) {
+			m_MoveBlock [i].SetPrevPosition ();
+		}
+	}
+
 
 	//右回転させるプログラム
 	private bool RotateRight(){
@@ -255,10 +323,6 @@ public class cBlockManager : MonoBehaviour {
 		}
 
 		if (i != BlockMax) {
-			for (int j = 0; j < 4; ++j) {
-				m_MoveBlock [j].SetPrevPosition ();
-			}
-
 			return true;
 		}
 
@@ -347,6 +411,12 @@ public class cBlockManager : MonoBehaviour {
 		m_LeftHitUpFlag = false;
 	}
 
+	public void HardDropMode(){
+		if (m_HardDropPossibleCount == 0) {
+			m_HardDropFlag = true;
+		}
+	}
+
 	//下がる速度上昇フラグを立てる
 	public void DownSpeedChange(){
 		m_DownSpeedFlag = true;
@@ -354,13 +424,11 @@ public class cBlockManager : MonoBehaviour {
 
 	//さがる基本速度を変える
 	public static void DownSpeedUp(){
-		if (m_DownSpeed < 1.0f) {
-			m_DownSpeed += 0.02f;
-		}
+		++m_DownAddNumber;
 	}
 
 	public static void InitSpeed(){
-		m_DownSpeed = 0.04f;
+		m_DownAddNumber = 0;
 	}
 
 	//フィールドに情報を渡して自殺する

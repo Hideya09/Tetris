@@ -27,6 +27,11 @@ public class cFadeInOut : MonoBehaviour {
 	//フェードアウト後に呼び出すシーン番号
 	public int m_SceneNumber;
 
+	void Awake(){
+		//フレームレート設定
+		Application.targetFrameRate = 60;
+	}
+
 	// Use this for initialization
 	void Start () {
 		m_Sprite = GetComponent< SpriteRenderer > ();
@@ -39,7 +44,7 @@ public class cFadeInOut : MonoBehaviour {
 		case eFadeState.FadeIn:
 			//徐々に白いテクスチャを薄くしていく
 			Color colorIn = m_Sprite.color;
-			colorIn.a -= FadeArpha;
+			colorIn.a -= Time.deltaTime;
 			m_Sprite.color = colorIn;
 
 			if (m_Sprite.color.a <= 0.0f) {
@@ -57,7 +62,7 @@ public class cFadeInOut : MonoBehaviour {
 		case eFadeState.FadeOut:
 			//徐々に白いテクスチャを濃くしていく
 			Color colorOut = m_Sprite.color;
-			colorOut.a += FadeArpha;
+			colorOut.a += Time.deltaTime;
 			m_Sprite.color = colorOut;
 
 			if (m_Sprite.color.a >= 1.0f) {

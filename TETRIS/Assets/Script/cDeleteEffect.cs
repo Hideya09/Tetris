@@ -13,8 +13,8 @@ public class cDeleteEffect : MonoBehaviour {
 	private TextMesh m_Text;
 
 	//画面内で止まっているフレーム数
-	private int m_Count;
-	private const int CountMax = 60;
+	private float m_Count;
+	private const float CountMax = 1.0f;
 
 	// Use this for initialization
 	void Start () {
@@ -38,11 +38,11 @@ public class cDeleteEffect : MonoBehaviour {
 		if (m_MoveFlag == true) {
 			Vector3 position = transform.position;
 			if (position.x < 1.0f) {
-				position.x += 1.0f;
+				position.x += 60.0f * Time.deltaTime;
 			} else if (m_Count < CountMax) {
-				++m_Count;
+				m_Count += Time.deltaTime;
 			} else if (position.x < 30.0f) {
-				position.x += 1.5f;
+				position.x += 90.0f * Time.deltaTime;
 			} else {
 				position.x = -20.0f;
 				m_MoveFlag = false;
@@ -59,6 +59,13 @@ public class cDeleteEffect : MonoBehaviour {
 			return;
 		}
 		m_Text.text = m_DeleteString [deleteNumber];
+
+		Vector3 position = transform.position;
+		position.x = -20.0f;
+		transform.position = position;
+
+		m_Count = 0;
+
 		m_MoveFlag = true;
 	}
 }

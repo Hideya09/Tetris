@@ -4,7 +4,7 @@ using System.Collections;
 public class cMoveBlock : MonoBehaviour {
 
 	//前回のローカル座標
-	private Vector3 m_PrevPosition;
+	private Vector3 m_PrevLocalPosition;
 
 	// Use this for initialization
 	void Start () {
@@ -13,7 +13,7 @@ public class cMoveBlock : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		//前回座標の更新
-		m_PrevPosition = transform.localPosition;
+		m_PrevLocalPosition = transform.localPosition;
 	}
 
 	//ワールド座標の取得
@@ -83,7 +83,7 @@ public class cMoveBlock : MonoBehaviour {
 
 	//前回位置に戻す
 	public void SetPrevPosition(){
-		transform.localPosition = m_PrevPosition;
+		transform.localPosition = m_PrevLocalPosition;
 	}
 
 	//色を設定する

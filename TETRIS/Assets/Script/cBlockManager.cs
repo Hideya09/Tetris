@@ -10,6 +10,8 @@ public class cBlockManager : MonoBehaviour {
 	public static float m_DownAdd = 1.2f;
 	public static int m_DownAddNumber = 0;
 
+	private const float DownMax = 60.0f;
+
 	//ブロックの最大数
 	private const int BlockMax = 4;
 
@@ -92,7 +94,15 @@ public class cBlockManager : MonoBehaviour {
 
 		//フィールドに存在している時
 		if (m_FieldFlag == true) {
+			float[] prevBlockPosition = new float[ BlockMax ];
+			for (int i = 0; i < 4; ++i) {
+				prevBlockPosition [i] = m_MoveBlock [i].GetPosition ().y;
+			}
+
 			m_DownSpeed = m_DownBasicSpeed + (m_DownAdd * m_DownAddNumber);
+			if (m_DownSpeed > DownMax) {
+				m_DownSpeed = DownMax;
+			}
 
 			if (m_HardDropPossibleCount > 0) {
 				--m_HardDropPossibleCount;
@@ -102,12 +112,18 @@ public class cBlockManager : MonoBehaviour {
 			Vector3 position = transform.position;
 
 			if (m_HardDropFlag == true) {
-				position.y = Mathf.Floor (position.y);
+				//position.y = Mathf.Floor (position.y);
 				m_DownSpeedFlag = false;
+
+				position.y -= ( DownMax * Time.deltaTime );
 			}
 
-			if (m_DownSpeedFlag == true) {
-				position.y -= ( m_DownSpeed * Time.deltaTime ) * 3;
+			else if (m_DownSpeedFlag == true) {
+				float speed = m_DownSpeed * 3;
+				if (speed > DownMax) {
+					speed = DownMax;
+				}
+				position.y -= ( speed * Time.deltaTime );
 				m_DownSpeedFlag = false;
 			} else {
 				position.y -= ( m_DownSpeed * Time.deltaTime );
@@ -118,35 +134,40 @@ public class cBlockManager : MonoBehaviour {
 			//固定されるかをチェック
 			int ghostNumber = cField.HightMax;
 
-			int i;
-			for (i = 0; i < BlockMax; i++) {
+			int hitNumber = -1;
+			for ( int i = 0; i < BlockMax; i++) {
 
-				if (m_Field.HitCheck (m_MoveBlock [i].GetPosition ())) {
-					m_Fixing += Time.deltaTime;
-					break;
+				int hit = m_Field.DownHitCheck (m_MoveBlock [i].GetPosition () , prevBlockPosition[i]);
+
+				if (hit > hitNumber) {
+					hitNumber = hit;
 				} else {
-					int down = m_Field.GhostCheck (m_MoveBlock [i].GetPosition ());
-					if (down < ghostNumber) {
-						ghostNumber = down;
+					if (hitNumber <= -1) {
+						int down = m_Field.GhostCheck (m_MoveBlock [i].GetPosition ());
+						if (down < ghostNumber) {
+							ghostNumber = down;
+						}
 					}
 				}
 			}
-			if (i == BlockMax) {
+			if (hitNumber > -1) {
+				//位置の修正
+				position = transform.position;
+				position.y += hitNumber;
+				position.y = Mathf.Ceil (position.y);
+				transform.position = position;
+
+				m_Fixing += Time.deltaTime;
+				if (m_HardDropFlag == true) {
+					m_Fixing = FixingMax;
+				}
+			} else {
 				m_Fixing = 0;
 
 				if (ghostNumber > 0) {
 					for (int j = 0; j < BlockMax; ++j) {
 						m_Field.SetBlock (m_MoveBlock [j], cColor.eColor.Gray, ghostNumber);
 					}
-				}
-
-			} else {
-				//位置の修正
-				position = transform.position;
-				position.y = Mathf.Ceil (position.y);
-				transform.position = position;
-				if (m_HardDropFlag == true) {
-					m_Fixing = FixingMax;
 				}
 			}
 
@@ -268,15 +289,24 @@ public class cBlockManager : MonoBehaviour {
 			return true;
 		}
 
-		position = transform.position;
+		if (m_BlockColor == cColor.eColor.Red) {
+			position.x += 1;
+			transform.position = position;
+
+			if (RotateHitCheck () == false) {
+				return true;
+			}
+
+			position.x -= 1;
+		}
+			
 		position.x -= 2;
 		transform.position = position;
 
 		if (RotateHitCheck () == false) {
 			return true;
 		}
-
-		position = transform.position;
+			
 		position.x += 1;
 		transform.position = position;
 
@@ -435,7 +465,7 @@ public class cBlockManager : MonoBehaviour {
 	public void DestroyManager(){
 		bool gameContinueFlag = false;
 
-		for( int i = 0 ; i < 4 ; i++ ){
+		for( int i = 0 ; i < BlockMax ; i++ ){
 
 			//色情報を渡す
 			 gameContinueFlag |= m_Field.SetBlock (m_MoveBlock [i], m_BlockColor);

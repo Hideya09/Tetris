@@ -8,10 +8,10 @@ public class cGameOver : MonoBehaviour {
 
 	//指定位置
 	public Vector3 m_MovePosition;
-	//何フレームで到達させるか
-	private float m_MaxCount;
+	//何秒で到達させるか
+	public float m_MaxCount;
 
-	//１フレームごとのスピード
+	//スピード
 	private float m_Speed;
 	//現在何フレーム進んだか
 	private float m_Count;
@@ -29,11 +29,11 @@ public class cGameOver : MonoBehaviour {
 
 		float distance = Vector3.Distance (m_MovePosition, position);
 
-		m_Speed = distance / m_MaxCount;
-
 		m_Direction.x = (m_MovePosition.x - position.x) / distance;
 		m_Direction.y = (m_MovePosition.y - position.y) / distance;
 		m_Direction.z = (m_MovePosition.z - position.z) / distance;
+
+		m_Speed = distance / m_MaxCount;
 
 		m_MoveFlag = false;
 	}
@@ -46,12 +46,18 @@ public class cGameOver : MonoBehaviour {
 			Vector3 position = transform.position;
 
 			if (m_Count < m_MaxCount) {
-				position.x += m_Direction.x * m_Speed;
-				position.y += m_Direction.y * m_Speed;
-				position.z += m_Direction.z * m_Speed;
-				transform.position = position;
+				if (Input.GetKeyDown (KeyCode.Return)) {
+					transform.position = m_MovePosition;
 
-				++m_Count;
+					m_Count = m_MaxCount;
+				} else {
+					position.x += m_Direction.x * (m_Speed * Time.deltaTime);
+					position.y += m_Direction.y * (m_Speed * Time.deltaTime);
+					position.z += m_Direction.z * (m_Speed * Time.deltaTime);
+					transform.position = position;
+				}
+
+				m_Count += Time.deltaTime;
 			} else {
 				if( Input.GetKeyDown( KeyCode.Return )){
 					GameObject fade = GameObject.Find ("Fade");

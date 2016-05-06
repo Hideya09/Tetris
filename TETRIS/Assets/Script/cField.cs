@@ -100,7 +100,7 @@ public class cField : MonoBehaviour {
 		int y = Mathf.FloorToInt(position.y);
 
 		//フィールド外部のため当たっていると判断する
-		if (y < 0 || x <= 0 || x >= WidthMax - 1 ) {
+		if ( y < 0 || x <= 0 || x >= WidthMax - 1 ) {
 			return true;
 		}
 
@@ -146,6 +146,37 @@ public class cField : MonoBehaviour {
 		return false;
 	}
 
+	public int DownHitCheck( Vector3 position , float prevPosition ){
+		//そのまま入れる
+		int x = (int)position.x;
+
+		//y座標は切り捨てで計算する
+		int prevY = Mathf.FloorToInt( prevPosition );
+
+		int y = Mathf.FloorToInt(position.y);
+
+		int maxCount = prevY - y + 1;
+
+		//フィールド外部のため当たっていると判断する
+		if ( x <= 0 || x >= WidthMax - 1 ) {
+			return 0;
+		}
+
+		//画面外に存在している
+		if (y >= HightMax) {
+			return -1;
+		}
+
+		//ブロックが存在しているところに当たっていると判断する
+		for (int i = 0; i < maxCount; ++i) {
+			if (m_FixingBlock [x + ( ( prevY - i ) * WidthMax)].GetColorType () < cColor.eColor.Gray) {
+				return maxCount - ( i + 1 );
+			}
+		}
+
+		return -1;
+	}
+
 	//ゴーストの処理
 	public int GhostCheck( Vector3 position ){
 		//そのまま入れる
@@ -153,6 +184,10 @@ public class cField : MonoBehaviour {
 
 		//y座標は切り捨てで計算する
 		int y = (int)Mathf.Floor(position.y);
+
+		if (y < 1) {
+			return 0;
+		}
 
 		int number = 0;
 

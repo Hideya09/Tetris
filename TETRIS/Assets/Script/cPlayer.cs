@@ -16,7 +16,7 @@ public class cPlayer : MonoBehaviour {
 		private KeyCode m_Key;
 
 		//単発入力か押しっぱなしかを判断する秒数
-		private const float FirstCountMax = 0.25f;
+		private const float FirstCountMax = 0.05f;
 
 		//まだ押されていることを確認するフレーム数
 		private const float CountMax = 0.05f;
@@ -73,7 +73,7 @@ public class cPlayer : MonoBehaviour {
 	private cKeyDownCheck[] m_KeyCheck;
 
 	//連続入力を取るキーの数
-	private const int KeyNumber = 4;
+	private const int KeyNumber = 2;
 
 	// Use this for initialization
 	void Start () {
@@ -83,10 +83,8 @@ public class cPlayer : MonoBehaviour {
 
 		m_KeyCheck [0] = new cKeyDownCheck(KeyCode.RightArrow);
 		m_KeyCheck [1] = new cKeyDownCheck(KeyCode.LeftArrow);
-		m_KeyCheck [2] = new cKeyDownCheck(KeyCode.A);
-		m_KeyCheck [3] = new cKeyDownCheck(KeyCode.S);
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
 		//生成破棄を繰り返すためここで取得し、存在してないならすぐ抜ける
@@ -110,11 +108,11 @@ public class cPlayer : MonoBehaviour {
 			blockManager.DontMove ();
 		}
 
-		if (m_KeyCheck[2].KeyCheck()) {
+		if (Input.GetKeyDown(KeyCode.A)) {
 			blockManager.RotateLeftCheck ();
 			blockManager.DontMove ();
 		}
-		if (m_KeyCheck[3].KeyCheck()) {
+		if (Input.GetKeyDown(KeyCode.S)) {
 			blockManager.RotateRightCheck ();
 			blockManager.DontMove ();
 		}

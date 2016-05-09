@@ -58,6 +58,10 @@ public class cGameOver : MonoBehaviour {
 				}
 
 				m_Count += Time.deltaTime;
+
+				if (m_Count >= m_MaxCount) {
+					GameObject.Find ("PushText").GetComponent< cPush > ().SetPush ();
+				}
 			} else {
 				if( Input.GetKeyDown( KeyCode.Return )){
 					GameObject fade = GameObject.Find ("Fade");

@@ -5,6 +5,7 @@ public class cSceneMove : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		GameObject.Find ("PushText").GetComponent< cPush > ().SetPush ();
 	}
 	
 	// Update is called once per frame
